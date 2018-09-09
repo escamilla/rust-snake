@@ -1,16 +1,12 @@
 use piston_window::types::Color;
 use piston_window::{rectangle, Context, G2d};
 
-const BLOCK_SIZE: u32 = 25;
+pub const BLOCK_SIZE: u32 = 25;
 
 #[derive(Clone, Debug)]
 pub struct Block {
     pub x: u32,
     pub y: u32,
-}
-
-pub fn convert_coord_to_pixels(coord: u32) -> u32 {
-    coord * BLOCK_SIZE
 }
 
 pub fn draw_rectangle(
@@ -25,10 +21,10 @@ pub fn draw_rectangle(
     rectangle(
         color,
         [
-            convert_coord_to_pixels(x) as f64,
-            convert_coord_to_pixels(y) as f64,
-            convert_coord_to_pixels(width) as f64,
-            convert_coord_to_pixels(height) as f64,
+            (x * BLOCK_SIZE) as f64,
+            (y * BLOCK_SIZE) as f64,
+            (width * BLOCK_SIZE) as f64,
+            (height * BLOCK_SIZE) as f64,
         ],
         context.transform,
         g2d,

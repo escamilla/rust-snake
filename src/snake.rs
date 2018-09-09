@@ -1,11 +1,13 @@
 use std::collections::LinkedList;
 
 use piston_window::types::Color;
-use piston_window::{Context, G2d};
+use piston_window::{rectangle, Context, G2d};
 
-use draw::{draw_block, Block};
+use draw::{draw_block, Block, BLOCK_SIZE};
 
-const SNAKE_COLOR: Color = [0.0, 0.8, 0.0, 1.0];
+const BODY_COLOR: Color = [0.0, 0.8, 0.0, 1.0];
+const EYE_COLOR: Color = [0.0, 0.0, 0.0, 1.0];
+const EYE_SIZE: u32 = BLOCK_SIZE / 5;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Direction {
@@ -32,6 +34,11 @@ pub struct Snake {
     tail: Option<Block>,
 }
 
+struct Point {
+    x: u32,
+    y: u32,
+}
+
 impl Snake {
     pub fn new() -> Self {
         let mut body: LinkedList<Block> = LinkedList::new();
@@ -48,8 +55,97 @@ impl Snake {
 
     pub fn draw(&self, context: &Context, g2d: &mut G2d) {
         for block in &self.body {
-            draw_block(SNAKE_COLOR, block.x, block.y, context, g2d);
+            draw_block(BODY_COLOR, block.x, block.y, context, g2d);
         }
+        self.draw_eyes(context, g2d);
+    }
+
+    fn draw_eyes(&self, context: &Context, g2d: &mut G2d) {
+        let (left_eye, right_eye) = self.get_eye_positions();
+        rectangle(
+            EYE_COLOR,
+            [
+                left_eye.x as f64,
+                left_eye.y as f64,
+                EYE_SIZE as f64,
+                EYE_SIZE as f64,
+            ],
+            context.transform,
+            g2d,
+        );
+        rectangle(
+            EYE_COLOR,
+            [
+                right_eye.x as f64,
+                right_eye.y as f64,
+                EYE_SIZE as f64,
+                EYE_SIZE as f64,
+            ],
+            context.transform,
+            g2d,
+        );
+    }
+
+    fn get_eye_positions(&self) -> (Point, Point) {
+        let (head_x, head_y): (u32, u32) = self.position();
+        let head_corner = Point {
+            x: head_x * BLOCK_SIZE,
+            y: head_y * BLOCK_SIZE,
+        };
+        let center_offset: u32 = EYE_SIZE / 2;
+        let block_offset_third: u32 = BLOCK_SIZE / 3;
+        let block_offset_two_thirds: u32 = 2 * BLOCK_SIZE / 3;
+        let (unadjusted_left_eye, unadjusted_right_eye) = match self.direction {
+            Direction::Up => (
+                Point {
+                    x: head_corner.x + block_offset_third,
+                    y: head_corner.y + block_offset_third,
+                },
+                Point {
+                    x: head_corner.x + block_offset_two_thirds,
+                    y: head_corner.y + block_offset_third,
+                },
+            ),
+            Direction::Down => (
+                Point {
+                    x: head_corner.x + block_offset_two_thirds,
+                    y: head_corner.y + block_offset_two_thirds,
+                },
+                Point {
+                    x: head_corner.x + block_offset_third,
+                    y: head_corner.y + block_offset_two_thirds,
+                },
+            ),
+            Direction::Left => (
+                Point {
+                    x: head_corner.x + block_offset_third,
+                    y: head_corner.y + block_offset_two_thirds,
+                },
+                Point {
+                    x: head_corner.x + block_offset_third,
+                    y: head_corner.y + block_offset_third,
+                },
+            ),
+            Direction::Right => (
+                Point {
+                    x: head_corner.x + block_offset_two_thirds,
+                    y: head_corner.y + block_offset_third,
+                },
+                Point {
+                    x: head_corner.x + block_offset_two_thirds,
+                    y: head_corner.y + block_offset_two_thirds,
+                },
+            ),
+        };
+        let adjusted_left_eye = Point {
+            x: unadjusted_left_eye.x - center_offset,
+            y: unadjusted_left_eye.y - center_offset,
+        };
+        let adjusted_right_eye = Point {
+            x: unadjusted_right_eye.x - center_offset,
+            y: unadjusted_right_eye.y - center_offset,
+        };
+        (adjusted_left_eye, adjusted_right_eye)
     }
 
     pub fn direction(&self) -> Direction {

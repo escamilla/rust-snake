@@ -77,9 +77,25 @@ impl Game {
         clear(BACKGROUND_COLOR, g2d);
 
         draw_rectangle(BORDER_COLOR, 0, 0, self.width, 1, context, g2d);
-        draw_rectangle(BORDER_COLOR, 0, self.height - 1, self.width, 1, context, g2d);
+        draw_rectangle(
+            BORDER_COLOR,
+            0,
+            self.height - 1,
+            self.width,
+            1,
+            context,
+            g2d,
+        );
         draw_rectangle(BORDER_COLOR, 0, 0, 1, self.height, context, g2d);
-        draw_rectangle(BORDER_COLOR, self.width - 1, 0, 1, self.height, context, g2d);
+        draw_rectangle(
+            BORDER_COLOR,
+            self.width - 1,
+            0,
+            1,
+            self.height,
+            context,
+            g2d,
+        );
 
         self.snake.draw(context, g2d);
 
