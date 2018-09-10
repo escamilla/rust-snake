@@ -56,7 +56,7 @@ impl Game {
             _ => None,
         };
 
-        if new_direction.unwrap() == self.snake.direction().opposite() {
+        if new_direction.is_some() && new_direction.unwrap() == self.snake.direction().opposite() {
             return;
         }
 
