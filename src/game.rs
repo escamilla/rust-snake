@@ -77,11 +77,11 @@ impl Game {
 
         self.draw_border(context, g2d);
 
-        self.snake.draw(context, g2d);
-
         if self.apple_exists {
             self.draw_apple(context, g2d);
         }
+
+        self.snake.draw(context, g2d);
 
         if self.game_over {
             draw_rectangle(GAME_OVER_COLOR, 0, 0, self.width, self.height, context, g2d);

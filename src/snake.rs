@@ -1,13 +1,15 @@
 use std::collections::LinkedList;
+use std::f64::consts::PI;
 
 use piston_window::types::Color;
-use piston_window::{rectangle, Context, G2d};
+use piston_window::{rectangle, Context, G2d, Transformed};
 
 use draw::{draw_block, Block, BLOCK_SIZE};
 
 const SNAKE_COLOR: Color = [0.34, 0.80, 0.17, 1.0];
 const EYE_COLOR: Color = [0.0, 0.0, 0.0, 1.0];
 const EYE_SIZE: f64 = (BLOCK_SIZE as f64) * 0.2;
+const TONGUE_COLOR: Color = [1.00, 0.50, 0.67, 1.0];
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Direction {
@@ -58,6 +60,7 @@ impl Snake {
             draw_block(SNAKE_COLOR, block.x, block.y, context, g2d);
         }
         self.draw_eyes(context, g2d);
+        self.draw_tongue(context, g2d);
     }
 
     fn draw_eyes(&self, context: &Context, g2d: &mut G2d) {
@@ -136,6 +139,72 @@ impl Snake {
             y: unadjusted_right_eye.y - center_offset,
         };
         (adjusted_left_eye, adjusted_right_eye)
+    }
+
+    fn draw_tongue(&self, context: &Context, g2d: &mut G2d) {
+        let (head_x, head_y): (u32, u32) = self.position();
+        let center_x = ((head_x * BLOCK_SIZE) as f64) + ((BLOCK_SIZE as f64) / 2.0);
+        let center_y = ((head_y * BLOCK_SIZE) as f64) + ((BLOCK_SIZE as f64) / 2.0);
+        let pixel_size = (BLOCK_SIZE as f64) * 0.1;
+
+        rectangle(
+            TONGUE_COLOR,
+            [
+                pixel_size * -0.5,
+                ((BLOCK_SIZE as f64) * -0.5) - (pixel_size * 2.0),
+                pixel_size,
+                (pixel_size * 2.0),
+            ],
+            context.transform
+                .trans(center_x, center_y)
+                .rot_rad(match self.direction {
+                    Direction::Up => 0.0,
+                    Direction::Right => PI * 0.5,
+                    Direction::Down => PI,
+                    Direction::Left => PI * 1.5,
+                }),
+            g2d,
+        );
+
+        rectangle(
+            TONGUE_COLOR,
+            [
+                (pixel_size * -0.5) - pixel_size,
+                ((BLOCK_SIZE as f64) * -0.5) - (pixel_size * 3.0),
+                pixel_size,
+                pixel_size,
+            ],
+            context
+                .transform
+                .trans(center_x, center_y)
+                .rot_rad(match self.direction {
+                    Direction::Up => 0.0,
+                    Direction::Right => PI * 0.5,
+                    Direction::Down => PI,
+                    Direction::Left => PI * 1.5,
+                }),
+            g2d,
+        );
+
+        rectangle(
+            TONGUE_COLOR,
+            [
+                (pixel_size * -0.5) + pixel_size,
+                ((BLOCK_SIZE as f64) * -0.5) - (pixel_size * 3.0),
+                pixel_size,
+                pixel_size,
+            ],
+            context
+                .transform
+                .trans(center_x, center_y)
+                .rot_rad(match self.direction {
+                    Direction::Up => 0.0,
+                    Direction::Right => PI * 0.5,
+                    Direction::Down => PI,
+                    Direction::Left => PI * 1.5,
+                }),
+            g2d,
+        );
     }
 
     pub fn direction(&self) -> Direction {
