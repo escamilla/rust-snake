@@ -5,9 +5,9 @@ use piston_window::{rectangle, Context, G2d};
 
 use draw::{draw_block, Block, BLOCK_SIZE};
 
-const BODY_COLOR: Color = [0.0, 0.8, 0.0, 1.0];
+const SNAKE_COLOR: Color = [0.34, 0.80, 0.17, 1.0];
 const EYE_COLOR: Color = [0.0, 0.0, 0.0, 1.0];
-const EYE_SIZE: u32 = BLOCK_SIZE / 5;
+const EYE_SIZE: f64 = (BLOCK_SIZE as f64) * 0.2;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Direction {
@@ -35,8 +35,8 @@ pub struct Snake {
 }
 
 struct Point {
-    x: u32,
-    y: u32,
+    x: f64,
+    y: f64,
 }
 
 impl Snake {
@@ -55,7 +55,7 @@ impl Snake {
 
     pub fn draw(&self, context: &Context, g2d: &mut G2d) {
         for block in &self.body {
-            draw_block(BODY_COLOR, block.x, block.y, context, g2d);
+            draw_block(SNAKE_COLOR, block.x, block.y, context, g2d);
         }
         self.draw_eyes(context, g2d);
     }
@@ -64,23 +64,13 @@ impl Snake {
         let (left_eye, right_eye) = self.get_eye_positions();
         rectangle(
             EYE_COLOR,
-            [
-                left_eye.x as f64,
-                left_eye.y as f64,
-                EYE_SIZE as f64,
-                EYE_SIZE as f64,
-            ],
+            [left_eye.x, left_eye.y, EYE_SIZE, EYE_SIZE],
             context.transform,
             g2d,
         );
         rectangle(
             EYE_COLOR,
-            [
-                right_eye.x as f64,
-                right_eye.y as f64,
-                EYE_SIZE as f64,
-                EYE_SIZE as f64,
-            ],
+            [right_eye.x, right_eye.y, EYE_SIZE, EYE_SIZE],
             context.transform,
             g2d,
         );
@@ -89,12 +79,12 @@ impl Snake {
     fn get_eye_positions(&self) -> (Point, Point) {
         let (head_x, head_y): (u32, u32) = self.position();
         let head_corner = Point {
-            x: head_x * BLOCK_SIZE,
-            y: head_y * BLOCK_SIZE,
+            x: (head_x * BLOCK_SIZE) as f64,
+            y: (head_y * BLOCK_SIZE) as f64,
         };
-        let center_offset: u32 = EYE_SIZE / 2;
-        let block_offset_third: u32 = BLOCK_SIZE / 3;
-        let block_offset_two_thirds: u32 = 2 * BLOCK_SIZE / 3;
+        let center_offset: f64 = (EYE_SIZE as f64) / 2.0;
+        let block_offset_third: f64 = (BLOCK_SIZE as f64) / 3.0;
+        let block_offset_two_thirds: f64 = block_offset_third * 2.0;
         let (unadjusted_left_eye, unadjusted_right_eye) = match self.direction {
             Direction::Up => (
                 Point {

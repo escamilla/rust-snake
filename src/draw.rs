@@ -1,7 +1,7 @@
 use piston_window::types::Color;
 use piston_window::{rectangle, Context, G2d};
 
-pub const BLOCK_SIZE: u32 = 25;
+pub const BLOCK_SIZE: u32 = 30;
 
 #[derive(Clone, Debug)]
 pub struct Block {
