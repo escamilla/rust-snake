@@ -5,8 +5,12 @@ use rand::{thread_rng, Rng};
 use draw::{draw_rectangle, BLOCK_SIZE};
 use snake::{Direction, Snake};
 
+pub const GAME_WIDTH: u32 = 19;
+pub const GAME_HEIGHT: u32 = 19;
+
 const BACKGROUND_COLOR: Color = [0.1, 0.1, 0.1, 1.0];
 const BORDER_COLOR: Color = [0.0, 0.0, 0.0, 1.0];
+const SCORE_COLOR: Color = [0.2, 0.2, 0.2, 1.0];
 const APPLE_COLOR: Color = [1.0, 0.0, 0.0, 1.0];
 const STEM_COLOR: Color = [0.60, 0.39, 0.22, 1.0];
 const LEAF_COLOR: Color = [0.34, 0.80, 0.17, 1.0];
@@ -18,6 +22,7 @@ const RESTART_TIME: f64 = 1.0;
 pub struct Game {
     width: u32,
     height: u32,
+    score: u32,
     snake: Snake,
     apple_exists: bool,
     apple_x: u32,
@@ -31,6 +36,7 @@ impl Game {
         let mut game = Game {
             width,
             height,
+            score: 0,
             snake: Snake::new(),
             apple_exists: false,
             apple_x: 0,
@@ -77,6 +83,8 @@ impl Game {
 
         self.draw_border(context, g2d);
 
+        self.draw_score(context, g2d);
+
         if self.apple_exists {
             self.draw_apple(context, g2d);
         }
@@ -109,6 +117,103 @@ impl Game {
             context,
             g2d,
         );
+    }
+
+    fn draw_score(&self, context: &Context, g2d: &mut G2d) {
+        let digits = self.get_digits(self.score);
+
+        let mut x_offset = (self.width / 2) - ((digits.len() * 3) as u32) / 2;
+        let y_offset = (self.height / 2) - 2;
+
+        for digit in digits.iter().rev() {
+            self.draw_number(context, g2d, *digit, x_offset, y_offset);
+            x_offset += 4;
+        }
+    }
+
+    fn get_digits(&self, mut number: u32) -> Vec<u8> {
+        let mut digits: Vec<u8> = Vec::new();
+        if number == 0 {
+            digits.push(0u8);
+        }
+        while number > 0 {
+            digits.push((number % 10) as u8);
+            number = number / 10;
+        }
+        digits
+    }
+
+    fn draw_number(
+        &self,
+        context: &Context,
+        g2d: &mut G2d,
+        number: u8,
+        x_offset: u32,
+        y_offset: u32,
+    ) {
+        match number {
+            0 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 5, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            1 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 2, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 1, y_offset + 1, 1, 4, context, g2d);
+            }
+            2 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 1, 3, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 3, context, g2d);
+            }
+            3 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            4 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 3, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            5 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 3, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 2, 1, 3, context, g2d);
+            }
+            6 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 5, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 2, 1, 3, context, g2d);
+            }
+            7 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            8 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 5, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 4, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            9 => {
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 1, 3, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 0, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 0, y_offset + 2, 3, 1, context, g2d);
+                draw_rectangle(SCORE_COLOR, x_offset + 2, y_offset + 0, 1, 5, context, g2d);
+            }
+            _ => (),
+        }
     }
 
     fn draw_apple(&self, context: &Context, g2d: &mut G2d) {
@@ -202,6 +307,7 @@ impl Game {
     }
 
     pub fn restart(&mut self) {
+        self.score = 0;
         self.snake = Snake::new();
         self.add_apple();
         self.game_over = false;
@@ -232,6 +338,7 @@ impl Game {
         if self.apple_exists {
             let (head_x, head_y): (u32, u32) = self.snake.position();
             if head_x == self.apple_x && head_y == self.apple_y {
+                self.score += 1;
                 self.apple_exists = false;
                 self.snake.restore_tail();
             }

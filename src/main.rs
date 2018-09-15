@@ -4,23 +4,20 @@ extern crate rand;
 use piston_window::{Button, PistonWindow, PressEvent, UpdateEvent, WindowSettings};
 
 use draw::BLOCK_SIZE;
-use game::Game;
+use game::{Game, GAME_HEIGHT, GAME_WIDTH};
 
 mod draw;
 mod game;
 mod snake;
 
 fn main() {
-    let (width_in_blocks, height_in_blocks): (u32, u32) = (20, 20);
+    let mut window: PistonWindow =
+        WindowSettings::new("Snake", [GAME_WIDTH * BLOCK_SIZE, GAME_HEIGHT * BLOCK_SIZE])
+            .exit_on_esc(true)
+            .build()
+            .unwrap();
 
-    let mut window: PistonWindow = WindowSettings::new(
-        "Snake",
-        [width_in_blocks * BLOCK_SIZE, height_in_blocks * BLOCK_SIZE],
-    ).exit_on_esc(true)
-        .build()
-        .unwrap();
-
-    let mut game = Game::new(width_in_blocks, height_in_blocks);
+    let mut game = Game::new(GAME_WIDTH, GAME_HEIGHT);
     while let Some(event) = window.next() {
         if let Some(Button::Keyboard(key)) = event.press_args() {
             game.key_pressed(key);
