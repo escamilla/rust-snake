@@ -39,9 +39,9 @@ pub struct Snake {
 impl Snake {
     pub fn new() -> Self {
         let mut body: LinkedList<Block> = LinkedList::new();
-        body.push_back(Block { x: 3, y: 3 });
-        body.push_back(Block { x: 2, y: 3 });
-        body.push_back(Block { x: 1, y: 3 });
+        body.push_back(Block { x: 6, y: 3 });
+        body.push_back(Block { x: 5, y: 3 });
+        body.push_back(Block { x: 4, y: 3 });
 
         Snake {
             direction: Direction::Right,
