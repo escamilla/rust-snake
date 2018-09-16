@@ -2,7 +2,7 @@
 
 The classic Snake game written in Rust using the Piston game engine.
 
-![Game Screenshot](screenshot.png)
+![Gameplay](gameplay.gif)
 
 # Instructions
 
